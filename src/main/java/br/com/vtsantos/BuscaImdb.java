@@ -33,6 +33,7 @@ public class BuscaImdb {
 			throw new IllegalArgumentException("parametro --apikey eh obrigatorio");
 		}
 		String[] termosDeBusca = ListaDeTermosDeBusca.toArray(new String[ListaDeTermosDeBusca.size()]);
+		System.out.println(termosDeBusca.length);
 		ApiImdbFactory apiImbdb = new ApiImdbFactory();
 		String urlPesquisa = apiImbdb.getUrlPesquisa(key, termosDeBusca);
 		System.out.println("URL de pesquisa: " + urlPesquisa);

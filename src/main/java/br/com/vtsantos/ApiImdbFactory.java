@@ -10,14 +10,24 @@ public class ApiImdbFactory {
 	public String getApiKey() {
 		return apiKey;
 	}
+
+	public String getUrlPesquisa(String key) {
+		if (key == null) {
+			throw new IllegalArgumentException("ApiKey nao pode ser nulo");
+		}
+		this.apiKey = key;
+		
+		return montaUrlPesquisa() ;
+	}
+
 	
 	public String getUrlPesquisa(String key, String[] termosDeBusca) {
 		if (key == null) {
 			throw new IllegalArgumentException("ApiKey nao pode ser nulo");
 		}
 		this.apiKey = key;
-		
 		return montaUrlPesquisa(termosDeBusca) ;
+		
 	}
 
 	public String getUrlPesquisa(String[] termosDeBusca) {
@@ -29,6 +39,9 @@ public class ApiImdbFactory {
 	}
 	
 	private String montaUrlPesquisa(String[] termosDeBusca) {
+		if (termosDeBusca == null || termosDeBusca.length < 1) {
+			return montaUrlPesquisa();
+		}
 		String urlBase = "https://imdb-api.com/pt-BR/API/Search/" + this.apiKey + "/";
 		String stringPesquisa = "";
 		for(String termo : termosDeBusca) {
@@ -42,5 +55,8 @@ public class ApiImdbFactory {
 		}
 	}
 
+	private String montaUrlPesquisa() {
+		return "https://imdb-api.com/en/API/Top250Movies/" + this.apiKey + "/";
+	}
 	
 }
