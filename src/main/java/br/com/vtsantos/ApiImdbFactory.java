@@ -42,21 +42,25 @@ public class ApiImdbFactory {
 		if (termosDeBusca == null || termosDeBusca.length < 1) {
 			return montaUrlPesquisa();
 		}
-		String urlBase = "https://imdb-api.com/pt-BR/API/Search/" + this.apiKey + "/";
+		String urlBase = "https://imdb-api.com/pt/API/Search/" + this.apiKey + "/";
 		String stringPesquisa = "";
 		for(String termo : termosDeBusca) {
-			stringPesquisa = stringPesquisa + termo;
+			if (stringPesquisa == "") {
+				stringPesquisa = stringPesquisa + termo;				
+			} else {
+				stringPesquisa = stringPesquisa + " " + termo;
+			}
+			
 		}	
 		try {
 			return urlBase + URLEncoder.encode(stringPesquisa , "UTF-8").replace("+", "%20");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			return urlBase + stringPesquisa;
 		}
 	}
 
 	private String montaUrlPesquisa() {
-		return "https://imdb-api.com/en/API/Top250Movies/" + this.apiKey + "/";
+		return "https://imdb-api.com/pt/API/Top250Movies/" + this.apiKey + "/";
 	}
 	
 }

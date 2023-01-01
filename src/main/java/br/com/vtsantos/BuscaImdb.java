@@ -9,52 +9,68 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class BuscaImdb {
 
 	public static void main(String[] args) {
-		System.out.println("Buscando IMDB por:");
-		String key = null;
+		String apiKey = null;
 		boolean pegaKey = false;
 		List<String> ListaDeTermosDeBusca = new ArrayList<String>();
-		for(String texto : args) {
+		for (String texto : args) {
 			if (pegaKey) {
-				key = texto;
-				pegaKey = false ;
-			} else if (texto.toLowerCase().equals("--apikey") && key == null) {
+				apiKey = texto;
+				pegaKey = false;
+			} else if (texto.toLowerCase().equals("--apikey") && apiKey == null) {
 				pegaKey = true;
 			} else {
 				ListaDeTermosDeBusca.add(texto);
 			}
-			System.out.println(texto);	
 		}
-		if (key == null) {
+		if (apiKey == null) {
 			throw new IllegalArgumentException("parametro --apikey eh obrigatorio");
 		}
+		System.out.println("Parametros recebidos: --apikey " + apiKey);
 		String[] termosDeBusca = ListaDeTermosDeBusca.toArray(new String[ListaDeTermosDeBusca.size()]);
-		System.out.println(termosDeBusca.length);
+		System.out.println("Buscando IMDB por (" + termosDeBusca.length +"):");
+		for(int i = 0 ; i < termosDeBusca.length ; i++) {
+			System.out.print(termosDeBusca[i] + " ");
+		}
+		System.out.println();
 		ApiImdbFactory apiImbdb = new ApiImdbFactory();
-		String urlPesquisa = apiImbdb.getUrlPesquisa(key, termosDeBusca);
+		String urlPesquisa = apiImbdb.getUrlPesquisa(apiKey, termosDeBusca);
 		System.out.println("URL de pesquisa: " + urlPesquisa);
 
 		HttpClient client = HttpClient.newHttpClient();
-		HttpRequest request = HttpRequest.newBuilder()
-		      .uri(URI.create(urlPesquisa))
-		      .build();
-		System.out.println("Resultados encontrados:");
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlPesquisa)).build();
+
 		HttpResponse<String> response = null;
 		try {
 			response = client.send(request, BodyHandlers.ofString());
-			System.out.println(response.statusCode());
-		} catch ( InterruptedException | IOException e) {
+			System.out.print("Resultados encontrados:");
+			System.out.println("(HttpStatusCode: " + response.statusCode() + ")");
+		} catch (InterruptedException | IOException e) {
 			e.printStackTrace();
 		}
-  
+
 		JSONObject json = new JSONObject(response.body());
+		System.out.println("Json recebido como resposta:");
 		System.out.println(json.toString(4));
+		json = new JSONObject(json, "results");
+
+		JSONArray arrayJson = json.getJSONArray("results");
+
+		System.out.println("Tratamento do Json para captura do titulo, descricao e url da imagem:");
+		for (int i = 0; i < arrayJson.length(); i++) {
+			JSONObject jsonItem = (JSONObject) arrayJson.get(i);
+			System.out.println("----------------------------");
+			System.out.println(jsonItem.getString("title") + " : " + jsonItem.getString("description"));
+			if ((jsonItem.getString("image") != null) && (!jsonItem.getString("image").trim().equals(""))) {
+				System.out.println(jsonItem.get("image"));
+			}
+		}
 		System.out.println("Fim");
 
 	}
 }
-
