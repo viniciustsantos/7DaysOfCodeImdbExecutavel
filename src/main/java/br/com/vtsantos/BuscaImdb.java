@@ -33,9 +33,9 @@ public class BuscaImdb {
 		}
 		System.out.println("Parametros recebidos: --apikey " + apiKey);
 		String[] termosDeBusca = ListaDeTermosDeBusca.toArray(new String[ListaDeTermosDeBusca.size()]);
-		System.out.println("Buscando IMDB por (" + termosDeBusca.length +"):");
+		System.out.print("Buscando IMDB por (" + termosDeBusca.length +"): ");
 		for(int i = 0 ; i < termosDeBusca.length ; i++) {
-			System.out.print(termosDeBusca[i] + " ");
+			System.out.print("'" + termosDeBusca[i] + "' ");
 		}
 		System.out.println();
 		ApiImdbFactory apiImbdb = new ApiImdbFactory();
@@ -62,6 +62,10 @@ public class BuscaImdb {
 		JSONArray arrayJson = json.getJSONArray("results");
 
 		System.out.println("Tratamento do Json para captura do titulo, descricao e url da imagem:");
+		List<String> titulos = ConverteJsonParaLista(arrayJson, "title");
+		List<String> images = ConverteJsonParaLista(arrayJson, "image");
+//		List<String> titulos = ConverteJsonParaLista(arrayJson, "title");
+		
 		for (int i = 0; i < arrayJson.length(); i++) {
 			JSONObject jsonItem = (JSONObject) arrayJson.get(i);
 			System.out.println("----------------------------");
@@ -70,7 +74,23 @@ public class BuscaImdb {
 				System.out.println(jsonItem.get("image"));
 			}
 		}
+		
+		System.out.println(titulos);
+		System.out.println(images);
+		
 		System.out.println("Fim");
 
 	}
+	
+	public static List<String> ConverteJsonParaLista (JSONArray jsonArray, String termo){
+		List<String> resultado = new ArrayList<String>();
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject jsonItem = (JSONObject) jsonArray.get(i);
+			resultado.add(jsonItem.getString(termo));
+		}
+		return resultado;
+
+	}
 }
+
+
